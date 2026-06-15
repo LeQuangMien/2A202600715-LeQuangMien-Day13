@@ -27,7 +27,8 @@
 - TRACE_WATERFALL_EXPLANATION: The `agent.run` span is the root observation. Inside it, `retrieve()` accounts for the majority of wall-clock time under `rag_slow` incident (5–13s), clearly visible as a wide span before the `FakeLLM.generate` call. Under normal conditions the entire span completes in ~150ms, confirming the bottleneck is exclusively in the RAG retrieval layer.
 
 ### 3.2 Dashboard & SLOs
-- DASHBOARD_6_PANELS_SCREENSHOT: ![Dashboard](docs/evidence/dashboard.png)
+- DASHBOARD_6_PANELS_SCREENSHOT:
+![Dashboard](./evidence/dashboard.png)
 - SLO_TABLE:
 
 | SLI | Target | Window | Current Value |
@@ -38,8 +39,9 @@
 | Quality Score | ≥ 0.75 | 28d | 0.88 |
 
 ### 3.3 Alerts & Runbook
-- ALERT_RULES_SCREENSHOT: ![Alert Rules](docs/evidence/alert_rules.png)
-- SAMPLE_RUNBOOK_LINK: !(docs/alerts.md)
+- ALERT_RULES_SCREENSHOT:
+![Alert Rules](./evidence/alert_rules.png)
+- SAMPLE_RUNBOOK_LINK: ![Sample runbook](./alerts.md)
 
 ---
 
