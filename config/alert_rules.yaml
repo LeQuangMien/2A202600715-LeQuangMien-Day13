@@ -15,7 +15,21 @@ alerts:
 
   - name: cost_budget_spike
     severity: P2
-    condition: hourly_cost_usd > 2.0 for 15m   # 2.0 tương ứng với ngưỡng 2x_baseline
+    condition: hourly_cost_usd > 2x_baseline for 15m
     type: symptom-based
     owner: finops-owner
     runbook: docs/alerts.md#3-cost-budget-spike
+
+  - name: low_quality_score
+    severity: P2
+    condition: quality_score_avg < 0.6 for 15m
+    type: symptom-based
+    owner: team-oncall
+    runbook: docs/alerts.md#4-low-quality-score
+
+  - name: rag_retrieval_slow
+    severity: P3
+    condition: rag_latency_p95_ms > 2000 for 10m
+    type: cause-based
+    owner: team-oncall
+    runbook: docs/alerts.md#5-rag-retrieval-slow

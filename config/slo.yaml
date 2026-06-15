@@ -3,16 +3,21 @@ window: 28d
 
 slis:
   latency_p95_ms:
-    objective: 5000        # Đã nâng lên 5000ms để khớp với runbook mới
-    target: 99.5
-    measurement: histogram_quantile(0.95, latency_ms)
+    objective: 3000          # p95 response phải dưới 3s
+    target: 99.5             # đạt 99.5% số requests
+    note: Measured at API layer including RAG retrieval time
 
   error_rate_pct:
-    objective: 5           # Đã nâng lên 5% để khớp với runbook mới
+    objective: 2             # error rate dưới 2%
     target: 99.0
-    measurement: errors / total_requests * 100
+    note: HTTP 5xx errors over total requests
 
   daily_cost_usd:
-    objective: 2.5
+    objective: 2.5           # chi phí LLM dưới $2.5/ngày
     target: 100.0
-    measurement: sum(cost_usd) per day
+    note: Estimated token cost via mock pricing model
+
+  quality_score_avg:
+    objective: 0.75          # average quality score >= 0.75
+    target: 95.0
+    note: Heuristic score based on answer relevance and doc coverage

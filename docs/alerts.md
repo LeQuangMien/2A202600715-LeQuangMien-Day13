@@ -1,40 +1,44 @@
-# Alert Rules and Runbooks
+# Alert Runbooks
 
-## 1. High latency P95
-- Severity: P2
-- Trigger: `latency_p95_ms > 5000 for 30m`
-- Impact: tail latency breaches SLO
-- First checks:
-  1. Open top slow traces in the last 1h
-  2. Compare RAG span vs LLM span
-  3. Check if incident toggle `rag_slow` is enabled
-- Mitigation:
-  - truncate long queries
-  - fallback retrieval source
-  - lower prompt size
+## 1. high-latency-p95
+**Condition:** p95 latency > 5000ms for 30 minutes  
+**Severity:** P2  
+**Steps:**
+1. Check `/metrics` endpoint for current latency distribution
+2. Check Langfuse traces — filter by high duration to find slow spans
+3. If RAG slow: check `rag_slow` incident toggle via `inject_incident.py`
+4. Escalate to on-call if not resolved in 30m
 
-## 2. High error rate
-- Severity: P1
-- Trigger: `error_rate_pct > 5 for 5m`
-- Impact: users receive failed responses
-- First checks:
-  1. Group logs by `error_type`
-  2. Inspect failed traces
-  3. Determine whether failures are LLM, tool, or schema related
-- Mitigation:
-  - rollback latest change
-  - disable failing tool
-  - retry with fallback model
+## 2. high-error-rate
+**Condition:** error_rate > 5% for 5 minutes  
+**Severity:** P1  
+**Steps:**
+1. Check `data/logs.jsonl` for `"level": "error"` entries
+2. Look at `error_type` field — common: `TypeError`, `TimeoutError`
+3. Check incident toggles: `curl localhost:8000/health`
+4. Disable faulty incident: `python scripts/inject_incident.py --scenario tool_fail --disable`
 
-## 3. Cost budget spike
-- Severity: P2
-- Trigger: `hourly_cost_usd > 2x_baseline for 15m`
-- Impact: burn rate exceeds budget
-- First checks:
-  1. Split traces by feature and model
-  2. Compare tokens_in/tokens_out
-  3. Check if `cost_spike` incident was enabled
-- Mitigation:
-  - shorten prompts
-  - route easy requests to cheaper model
-  - apply prompt cache
+## 3. cost-budget-spike
+**Condition:** hourly cost > 2x baseline for 15 minutes  
+**Severity:** P2  
+**Steps:**
+1. Check `/metrics` for `cost_usd_total`
+2. Check Langfuse for traces with abnormally high token counts
+3. Check `cost_spike` incident toggle
+4. Notify finops-owner if confirmed
+
+## 4. low-quality-score
+**Condition:** avg quality_score < 0.6 for 15 minutes  
+**Severity:** P2  
+**Steps:**
+1. Check Langfuse traces — filter by low quality_score metadata
+2. Verify RAG docs are being retrieved (`doc_count` in trace metadata)
+3. Check if `rag_slow` incident is causing empty doc returns
+
+## 5. rag-retrieval-slow
+**Condition:** RAG p95 latency > 2000ms for 10 minutes  
+**Severity:** P3  
+**Steps:**
+1. Run `python scripts/inject_incident.py --scenario rag_slow` to confirm reproduction
+2. Check Langfuse span duration for `retrieve()` calls
+3. Disable incident: `python scripts/inject_incident.py --scenario rag_slow --disable`
