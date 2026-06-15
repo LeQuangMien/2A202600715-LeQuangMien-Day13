@@ -18,9 +18,12 @@
 ## 3. Technical Evidence (Group)
 
 ### 3.1 Logging & Tracing
-- EVIDENCE_CORRELATION_ID_SCREENSHOT: ![Correlation ID](./evidence/correlation_id.png)
-- EVIDENCE_PII_REDACTION_SCREENSHOT: ![Pii Redaction](./evidence/pii_redaction.png)
-- EVIDENCE_TRACE_WATERFALL_SCREENSHOT: ![Trace](./evidence/langfuse_traces.png)
+- EVIDENCE_CORRELATION_ID_SCREENSHOT:
+![Correlation ID](./evidence/correlation_id.png)
+- EVIDENCE_PII_REDACTION_SCREENSHOT:
+![Pii Redaction](./evidence/pii_redaction.png)
+- EVIDENCE_TRACE_WATERFALL_SCREENSHOT:
+![Trace](./evidence/langfuse_traces.png)
 - TRACE_WATERFALL_EXPLANATION: The `agent.run` span is the root observation. Inside it, `retrieve()` accounts for the majority of wall-clock time under `rag_slow` incident (5–13s), clearly visible as a wide span before the `FakeLLM.generate` call. Under normal conditions the entire span completes in ~150ms, confirming the bottleneck is exclusively in the RAG retrieval layer.
 
 ### 3.2 Dashboard & SLOs
